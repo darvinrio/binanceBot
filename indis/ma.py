@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
-import strip 
+try:
+    from .strip import strip 
+except:
+    from strip import strip 
 
 def rmaVal(arr, l): # returns rma for give array and length
     a = 1/l
@@ -29,7 +32,7 @@ def rma(df, lookback):
     out = np.array([])
 
     for i in range(l) :
-        arr = strip.strip(close, i, lookback)
+        arr = strip(close, i, lookback)
         if arr is None:
             out = np.append(out, np.nan)
         else:

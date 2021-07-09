@@ -1,5 +1,6 @@
-import ma
-import volat
+
+from .ma import rma
+from .volat import atr
 import pandas as pd
 import numpy as np
 
@@ -13,11 +14,11 @@ def getHCCP(df, scl=10, mcl=30, scm=1.0, mcm=3.0): # hlc = [h, l, c]
     scl = int(scl/2)
     mcl = int(mcl/2)
 
-    ma_scl = ma.rma(df, scl) 
-    ma_mcl = ma.rma(df, mcl) 
+    ma_scl = rma(df, scl) 
+    ma_mcl = rma(df, mcl) 
 
-    scm_off = scm*(volat.atr(df,scl))
-    mcm_off = mcm*(volat.atr(df,mcl))
+    scm_off = scm*(atr(df,scl))
+    mcm_off = mcm*(atr(df,mcl))
 
     # print(df)
 
@@ -43,16 +44,16 @@ def getHCCP(df, scl=10, mcl=30, scm=1.0, mcm=3.0): # hlc = [h, l, c]
     df['mct'] = df2[cols[1]] + df2[cols[3]]
     df['mcb'] = df2[cols[1]] - df2[cols[3]]
 
-    # df['sct']=df['sct'].mask(pd.isnull, df['close'])
-    # df['scb']=df['scb'].mask(pd.isnull, df['close'])
-    # df['mct']=df['mct'].mask(pd.isnull, df['close'])
-    # df['mcb']=df['mcb'].mask(pd.isnull, df['close'])
+    df['sct']=df['sct'].mask(pd.isnull, df['close'])
+    df['scb']=df['scb'].mask(pd.isnull, df['close'])
+    df['mct']=df['mct'].mask(pd.isnull, df['close'])
+    df['mcb']=df['mcb'].mask(pd.isnull, df['close'])
 
-
-    print(df)
+    return df
 
 if __name__ == "__main__":
 
     df = (pd.read_csv('../test/testData.csv')).drop('Unnamed: 0',axis=1)
 
-    getHCCP(df)
+    # out = getHCCP(df)
+    # print(out)

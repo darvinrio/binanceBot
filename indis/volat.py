@@ -1,6 +1,10 @@
 import numpy as np
-import strip 
 import pandas as pd
+
+try:
+    from .strip import strip 
+except:
+    from strip import strip 
 
 def atrVal(arr): # arr = [[h, l, c]]
     tr = np.zeros(len(arr))
@@ -35,7 +39,7 @@ def atr(df, lookback):
     out = np.array([])
 
     for i in range(l):
-        arr = strip.strip(hlc, i=i, n=lookback)
+        arr = strip(hlc, i=i, n=lookback)
         if arr is None:
             out = np.append(out, np.nan)
         else:
