@@ -40,7 +40,7 @@ for column in hccpData :
             y=hccpData[column]))
 
 
-fig.write_html("plot.html")
+# fig.write_html("plot.html")
 # fig.show()
-
+fig.write_image("output/hccpPlot.png")
 # print(hccpData)
