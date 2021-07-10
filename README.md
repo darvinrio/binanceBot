@@ -6,6 +6,7 @@ simple trading bot with flask backend and html+js ui
 
 Current interactive output is available in output folder `plot.html`
 
+Create a `private` folder and copy `keys.py` from `keysTemplate` folder and add your binance API keys
 Run the app using `flask` to run `app.py` or running `plotlyTest.py`
 
 Current output in compressed png 
