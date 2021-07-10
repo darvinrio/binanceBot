@@ -7,7 +7,7 @@ var chart = LightweightCharts.createChart(document.getElementById('chart'), {
 	width: 1280,
   	height: 720,
 	layout: {
-		backgroundColor: '#000000',
+		backgroundColor: '#1C2833',
 		textColor: 'rgba(255, 255, 255, 0.9)',
 	},
 	grid: {
@@ -30,13 +30,15 @@ var chart = LightweightCharts.createChart(document.getElementById('chart'), {
 	},
 });
 
+const downColr = '#E74C3C'
+const upColr = '#48C9B0' 
 var candleSeries = chart.addCandlestickSeries({
-  upColor: '#008000',
-  downColor: '#FF0000',
-  borderDownColor: '#FF0000',
-  borderUpColor: '#008000',
-  wickDownColor: '#FF0000',
-  wickUpColor: '#008000',
+  upColor: upColr,
+  downColor: downColr,
+  borderDownColor: downColr,
+  borderUpColor: upColr,
+  wickDownColor:downColr,
+  wickUpColor: upColr,
 });
 
 
