@@ -10,7 +10,7 @@ fig = go.Figure()
 fig.update_layout(hovermode="x")
 fig.update_yaxes(fixedrange=False)
 
-def plotCandles(df, data):
+def plotCandles(df):
     fig.add_trace(go.Candlestick(
                 x=pd.to_datetime(df['openTime']/1000, unit='s'),
                 open=df['open'],
@@ -19,12 +19,13 @@ def plotCandles(df, data):
                 close=df['close']
     ))
 
+def plotLines(data):
     for column in data :
         if column == 'openTime':
             continue
         else:
             fig.add_trace(go.Scatter(
-                x=pd.to_datetime(df['openTime']/1000, unit='s'), 
+                x=pd.to_datetime(data['openTime']/1000, unit='s'), 
                 y=data[column], name=column
             ))
 
@@ -65,7 +66,8 @@ if __name__ == "__main__":
 
     hccpData = hccpData.drop(['open', 'high', 'low', 'close', 'volume', 'closeTime'], axis=1)
 
-    plotCandles(df, hccpData)
+    plotCandles(df)
+    plotLines(hccpData)
     showPlot()
 
  

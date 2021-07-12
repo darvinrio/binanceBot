@@ -35,26 +35,74 @@ if __name__ == "__main__":
     buy = np.full(c, False) # array for 'buy'
     sell = np.full(c, False) # array for 'sel'
 
+    portfolio = 10 # starting portfolio
+    lev = 11 #trade leverage
+
     flag = False # flag for inOrder
+    order = {
+        "type" : "long or short",
+        "order": {
+            "coinAmt" : 0,
+            "usdtAmt" : 0,
+            "enterPrice" : 0,
+            "exitPrice" : 0
+        } 
+    }
+
+    # print(order['order'])
+    # print(type(order))
+    # exit()
 
     for column in range(c):
         if not(flag) and ((dNP[3][column] >= dNP[8][column]) and (dNP[8][column] >= dNP[0][column])) :
-            print('enter at ' + str(dNP[1][column]))
+            entryPrice = dNP[1][column]
+
+            order['type'] = 'long'
+            order['order']['coinAmt'] = (portfolio*lev)/entryPrice
+            order['order']['usdtAmt'] = portfolio
+            order['order']['enterPrice'] = entryPrice
+            order['order']['exitPrice'] = dNP[2][column]
+
+            print('enter at ' + str(entryPrice))
+            print(order)
+
             flag = True
             buy[column] = True
 
         if flag and (dNP[1][column] >= dNP[5][column]) :
-            print('exit at ' + str(dNP[2][column]))
+            exitPrice = dNP[2][column]
+
+            coinsAmt = order['order']['coinAmt']
+            entryPrice = order['order']['enterPrice']
+            portfolio = (coinsAmt * exitPrice) - (order['order']['usdtAmt'] * lev) + order['order']['usdtAmt']
+            profit = portfolio - order['order']['usdtAmt']
+            coinChange = exitPrice - order['order']['enterPrice']
+
+            order['type'] = None
+            order['order']['coinAmt'] = 0
+            order['order']['usdtAmt'] = portfolio
+            order['order']['enterPrice'] = 0
+            order['order']['exitPrice'] = 0
+
+            print('exit at ' + str(exitPrice))
+            print(order)
+            print('profit = ' + str(profit))
+            print('change in Coin Value = ' + str(coinChange))
+            print('###########################')
+
             flag = False
             sell[column] = True
-        
+
+    print('Final Portfolio' + str(portfolio))
+
+    # exit()
 
     b = pd.DataFrame({'buy': buy})
     s = pd.DataFrame({'sell': sell})
 
     result = pd.concat([hccpData, b, s], axis=1, join="inner")
 
-    print(result)
+    # print(result)
 
     buy = result[result['buy'] == True]
     sell = result[result['sell'] == True]
@@ -65,8 +113,9 @@ if __name__ == "__main__":
     sell['openTime'] = pd.to_datetime(sell['openTime']/1000, unit='s')
     sellTime = sell['openTime'].to_numpy()
 
-    data = hccpData.drop(['openTime', 'open', 'high', 'low', 'close', 'volume', 'closeTime'], axis=1)
-    plt.plotCandles(result, data)
+    data = hccpData.drop(['open', 'high', 'low', 'close', 'volume', 'closeTime'], axis=1)
+    plt.plotCandles(result)
+    plt.plotLines(data)
 
     plt.plotBuy(buyTime)
     plt.plotSell(sellTime)

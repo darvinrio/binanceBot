@@ -4,8 +4,8 @@ import pandas as pd
 
 client = Client(KEYS.key,KEYS.secret)
 
-def getCandles():
-    candles = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1MINUTE, "1 day ago UTC")
+def getCandles(len = '1 day'):
+    candles = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1MINUTE, len + " ago UTC")
     return candles
 
 def prepTest(file):

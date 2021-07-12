@@ -1,0 +1,9 @@
+{
+    "type" : "long or short",
+    "order": {
+        "coinAmt" : 0,
+        "usdtAmt" : 0,
+        "enterPrice" : 0,
+        "exitPrice" : 0
+    } 
+}
