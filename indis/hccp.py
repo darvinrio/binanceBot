@@ -1,6 +1,10 @@
 
-from .ma import rma
-from .volat import atr
+try:
+    from .ma import rma
+    from .volat import atr
+except:
+    from ma import rma
+    from volat import atr    
 import pandas as pd
 import numpy as np
 
@@ -44,10 +48,10 @@ def getHCCP(df, scl=10, mcl=30, scm=1.0, mcm=3.0): # hlc = [h, l, c]
     df['mct'] = df2[cols[1]] + df2[cols[3]]
     df['mcb'] = df2[cols[1]] - df2[cols[3]]
 
-    df['sct']=df['sct'].mask(pd.isnull, df['close'])
-    df['scb']=df['scb'].mask(pd.isnull, df['close'])
-    df['mct']=df['mct'].mask(pd.isnull, df['close'])
-    df['mcb']=df['mcb'].mask(pd.isnull, df['close'])
+    # df['sct']=df['sct'].mask(pd.isnull, df['close'])
+    # df['scb']=df['scb'].mask(pd.isnull, df['close'])
+    # df['mct']=df['mct'].mask(pd.isnull, df['close'])
+    # df['mcb']=df['mcb'].mask(pd.isnull, df['close'])
 
     return df
 
@@ -55,5 +59,11 @@ if __name__ == "__main__":
 
     df = (pd.read_csv('../test/testData.csv')).drop('Unnamed: 0',axis=1)
 
-    # out = getHCCP(df)
-    # print(out)
+    out = getHCCP(df)
+
+    # for row in out.iterrows():
+    #     print(row)
+
+    out = out.dropna().reset_index(drop=True)
+    # out = out
+    print(out)

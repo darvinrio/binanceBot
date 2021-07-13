@@ -1,14 +1,16 @@
 import pandas as pd
 import plotlyTest as plt
 import numpy as np
-
+import getData
+import copy
+#tohlct
 class bt:
     """
         By default: \n
         Long is from candle.high to candle.low \n
         Short is from candle.low to candle.high \n
     """
-    orderList = []
+    
 
     order = {
         "type" : None,
@@ -16,8 +18,10 @@ class bt:
             "coinAmt" : 0,
             "usdtAmt" : 0,
             "enterPrice" : 0,
-            "exitPrice" : 0
-        } 
+            "exitPrice" : 0,
+            "entryTime" : "",
+            "exitTime" : "" 
+        }
     }
 
     candleColumns = {} 
@@ -54,8 +58,15 @@ class bt:
         self.candles = candles.copy()
         self.portfolio = portfolio
         self.mainData = candles.copy()
+        self.orderList = []
 
-        plt.plotCandles(self.candles)
+        for column in self.candles:
+            if column == 'openTime' or column == 'closeTime' :
+                continue
+            self.candles[column] = pd.to_numeric(self.candles[column], downcast="float")
+            self.mainData[column] = pd.to_numeric(self.mainData[column], downcast="float")
+
+        # plt.plotCandles(self.candles)
 
         self.__columnCtrl(candles)
 
@@ -93,72 +104,98 @@ class bt:
     def appendLineSeriesData(self, data):
         self.lineSeriesData = pd.concat([self.lineSeriesData, data], axis=1, join='inner')
         self.__appendMain(data)
+        self.mainData.dropna().reset_index(drop=True)
 
 
-    def goLong(self, entryCondition, exitCondition): 
+    def defineOrder(self, entryCondition, exitCondition, longFlag = True): 
         # condition = 'open < mcb and close > mcb'
         """
-        orderType = 'long' or 'short'
+            orderType = 'long' or 'short'
         """
+        if longFlag :
+            orderType = 'long'
+            orderFlag = 1
+        else :
+            orderType = 'short'
+            orderFlag = -1 
+
         entryCondition = self.__parseCondition(entryCondition)
         exitCondition = self.__parseCondition(exitCondition)
-
+        
         for column in range(self.npColumn):
             if self.order["type"] is None and eval(entryCondition):
-                entryPrice = self.dataNP[2][column]
 
-                self.order['type'] = 'long'
+                if longFlag:
+                    entryPrice = self.dataNP[2][column]
+                else :
+                    entryPrice = self.dataNP[3][column]
+
+                self.order['type'] = orderType
                 self.order['order']['coinAmt'] = (self.portfolio*self.leverage)/entryPrice
                 self.order['order']['usdtAmt'] = self.portfolio
                 self.order['order']['enterPrice'] = entryPrice
+                self.order['order']['entryTime'] = self.dataNP[0][column]
 
                 self.long.iloc[column,0] = True
 
             if self.order["type"] is not(None) and eval(exitCondition):
-                exitPrice = self.dataNP[3][column]
+
+                if longFlag:
+                    exitPrice = self.dataNP[3][column]
+                else :
+                    exitPrice = self.dataNP[2][column]
+
                 self.order['order']['exitPrice'] = exitPrice
+                self.order['order']['exitTime'] = self.dataNP[0][column]
 
                 coinsAmt = self.order['order']['coinAmt']
                 entryPrice = self.order['order']['enterPrice']
-                self.portfolio = (coinsAmt * exitPrice) - (self.order['order']['usdtAmt'] * self.leverage) + self.order['order']['usdtAmt']
+                self.portfolio = orderFlag * ((coinsAmt * exitPrice) - (self.order['order']['usdtAmt'] * self.leverage)) + self.order['order']['usdtAmt']
                 profit = self.portfolio - self.order['order']['usdtAmt']
                 coinChange = exitPrice - self.order['order']['enterPrice']
 
-                currentOrder = self.order.copy()
+                currentOrder = copy.deepcopy(self.order)
                 currentOrder['profit'] = profit
+                currentOrder['profitPercent'] = profit * 100 / self.order['order']['usdtAmt']
                 currentOrder['coinChange'] = coinChange
-                self.orderList = [self.orderList].append(currentOrder)
+
+                self.orderList.append(currentOrder)
+                del(currentOrder)
 
                 self.order['type'] = None
                 self.order['order']['coinAmt'] = 0
                 self.order['order']['usdtAmt'] = self.portfolio
                 self.order['order']['enterPrice'] = 0
                 self.order['order']['exitPrice'] = 0
+                self.order['order']['entryTime'] = ""
+                self.order['order']['exitTime'] = ""
 
                 self.long.iloc[column,1] = True
 
 
-    def exitOrder(self):
-        orderType = self.order['type'] 
-        if orderType == 'long' :
-            exitPrice = 100
-        elif orderType == 'short':
-            exitPrice = 100
-
-        self.order['type'] = None
-
-        print('yolo')
-
-
     def printCandles(self):
+        """
+            plots candles using plotly.py
+        """
         print(self.candles)
+
+
+    def getOrderList(self):
+        """
+            Returns list of orders in pandas Dataframe
+        """  
+        return pd.json_normalize(self.orderList)
+
+
+    def plotCandles(self):             
+        plt.plotCandles(self.candles)
 
 
     def plotLineSeries(self):
         plt.plotLines(self.lineSeriesData)
 
 
-    def plotLong(self):
+    def plotOrders(self):
         buySeries = self.long['entry']
         sellSeries = self.long['exit']
         openTimeSeries = self.mainData['openTime']
@@ -186,15 +223,21 @@ class bt:
         plt.plotBuy(buyTime)
         plt.plotSell(sellTime)
 
+        del(buyDF, sellDF, buyTime, sellTime)
+
 
     def showPlot(self):
         plt.showPlot()
 
+
+
 if __name__ == "__main__":
 
-    candleData = (pd.read_csv('test/testData.csv')).drop('Unnamed: 0', axis=1)
-    
-    
+    candles = getData.getCandles(leng='1 day', time=1)
+    df = pd.DataFrame(candles)
+    df = df.drop([7,8,9,10,11], axis=1)
+    df.columns = ['openTime', 'open', 'high', 'low', 'close', 'volume', 'closeTime']
+
     from indis.hccp import getHCCP
     class strategy(bt):        
         def __init__(self, candles, portfolio=0):
@@ -207,17 +250,11 @@ if __name__ == "__main__":
         def plotHccp(self):
             self.plotLineSeries()
 
-    strat = strategy(candleData,10)
-    # print(strat.mainData)
-
-    strat.plotHccp()
-    # print(strat.candleColumns)
+    strat = strategy(df,10)
     strat.initNumPy()
-    # print(strat.long)
-    strat.goLong('open < mcb and close > mcb', 'high > sct')
-    # print(strat.long)
-    # print(strat.orderList)
-    # print(strat.portfolio)
-    strat.plotLong()
-
-    strat.showPlot()
+    strat.defineOrder('open < mcb and close > mcb', 'high > sct')
+    strat.defineOrder('open > mct and close < mct', 'low < scb', longFlag=False)
+    
+    df = strat.getOrderList()
+    print(strat.portfolio)
+    df.to_csv('orders.csv')

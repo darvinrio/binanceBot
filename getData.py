@@ -2,10 +2,15 @@ import private.keys as KEYS
 from binance.client import Client
 import pandas as pd
 
+from binance.client import Client
 client = Client(KEYS.key,KEYS.secret)
 
-def getCandles(len = '1 day'):
-    candles = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1MINUTE, len + " ago UTC")
+def getCandles(leng = '1 day', time = '1'):
+    """
+        time in minutes only
+    """
+    string = "Client.KLINE_INTERVAL_"+str(time)+"MINUTE"
+    candles = client.get_historical_klines("BTCUSDT", eval(string), leng + " ago UTC")
     return candles
 
 def prepTest(file):
