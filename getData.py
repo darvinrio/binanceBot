@@ -1,16 +1,24 @@
 import private.keys as KEYS
 from binance.client import Client
 import pandas as pd
-
+from binance.enums import HistoricalKlinesType
 from binance.client import Client
 client = Client(KEYS.key,KEYS.secret)
 
-def getCandles(leng = '1 day', time = '1'):
+def getCandles(symbol="BTCUSDT", leng = '1 day', time = '1', klineType = 'SPOT'):
     """
-        time in minutes only
+        time in minutes only \n
+        klineType : {SPOT, FUTURES}
     """
-    string = "Client.KLINE_INTERVAL_"+str(time)+"MINUTE"
-    candles = client.get_historical_klines("BTCUSDT", eval(string), leng + " ago UTC")
+    timeStr = "Client.KLINE_INTERVAL_"+str(time)+"MINUTE"
+    klineStr = "HistoricalKlinesType."+klineType
+
+    candles = client.get_historical_klines(
+        symbol,
+        eval(timeStr), 
+        leng + " ago UTC",
+        klines_type=eval(klineStr)
+    )
     return candles
 
 def prepTest(file):

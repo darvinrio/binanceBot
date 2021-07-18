@@ -1,7 +1,7 @@
 import pandas as pd
 import plotlyTest as plt
 import numpy as np
-import getData
+
 import copy
 #tohlct
 class bt:
@@ -226,35 +226,69 @@ class bt:
         del(buyDF, sellDF, buyTime, sellTime)
 
 
-    def showPlot(self):
-        plt.showPlot()
+    def showPlot(self,file="output/plot.html"):
+        plt.showPlot(file)
 
 
 
 if __name__ == "__main__":
 
-    candles = getData.getCandles(leng='1 day', time=1)
+    import getData
+
+    candles = getData.getCandles(
+        symbol="BTCUSDT", 
+        leng='1 day', 
+        time=1, 
+        klineType="FUTURES"
+    )
     df = pd.DataFrame(candles)
     df = df.drop([7,8,9,10,11], axis=1)
     df.columns = ['openTime', 'open', 'high', 'low', 'close', 'volume', 'closeTime']
 
-    from indis.hccp import getHCCP
-    class strategy(bt):        
-        def __init__(self, candles, portfolio=0):
 
-            super().__init__(candles, portfolio)
-            self.hccp = getHCCP(self.candles)
+    from indis.redK import lazyLine
 
-            self.setLineSeriesData(self.hccp.drop(['open', 'high', 'low', 'close', 'volume', 'closeTime'], axis=1))
+    obj = bt(df, portfolio=10)
 
-        def plotHccp(self):
-            self.plotLineSeries()
+    redKline = lazyLine(obj.candles)
 
-    strat = strategy(df,10)
-    strat.initNumPy()
-    strat.defineOrder('open < mcb and close > mcb', 'high > sct')
-    strat.defineOrder('open > mct and close < mct', 'low < scb', longFlag=False)
-    
-    df = strat.getOrderList()
-    print(strat.portfolio)
+    obj.setLineSeriesData(redKline)
+    obj.initNumPy()
+
+    obj.defineOrder('close < wma10', 'close > wma10', longFlag=False)
+
+    obj.plotCandles()
+    obj.plotLineSeries()
+    obj.plotOrders()
+    obj.showPlot()
+    print(obj.portfolio)
+
+    df = obj.getOrderList()
     df.to_csv('orders.csv')
+
+    # 
+        # from indis.hccp import getHCCP
+
+        # class strategy(bt):        
+        #     def __init__(self, candles, portfolio=0):
+
+        #         super().__init__(candles, portfolio)
+        #         self.hccp = getHCCP(self.candles)
+
+        #         self.setLineSeriesData(self.hccp.drop(['open', 'high', 'low', 'close', 'volume', 'closeTime'], axis=1))
+
+        #     def plotHccp(self):
+        #         self.plotLineSeries()
+
+        # strat = strategy(df,10)
+        # strat.initNumPy()
+        # strat.defineOrder('low < ( mcb + 50 ) and close > ( mcb + 50 )', 'high > ( mct - 50 )')
+        # # strat.defineOrder('high > sct and open < sct' , 'low < scb', longFlag=False)
+        
+        # df = strat.getOrderList()
+        # print(strat.portfolio)
+        # df.to_csv('orders.csv')
+        # strat.plotCandles()
+        # strat.plotLineSeries()
+        # # strat.plotOrders()
+        # strat.showPlot()

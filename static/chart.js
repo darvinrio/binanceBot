@@ -80,17 +80,28 @@ fetch(domain + '/hccp')
 		mcb.setData(response[0]['mcb'])
 	})
 
-// exampleSocket.onmessage = function (event) {
+	var candleSeries2 = chart.addCandlestickSeries({
+		upColor: '#FFFC33',
+		downColor: 'rgba(4, 111, 232, 1)',
+		borderDownColor: 'rgba(4, 111, 232, 1)',
+		borderUpColor: '#FFFC33',
+		wickDownColor:'rgba(4, 111, 232, 1)',
+		wickUpColor: '#FFFC33',
+		})
+
+	  var k = True
+
+exampleSocket.onmessage = function (event) {
 	
-// 	var msgObj = JSON.parse(event.data)
+	var msgObj = JSON.parse(event.data)
+	var candle = msgObj.k
 
-// 	var candle = msgObj.k
 
-// 	candleSeries.update({
-// 		time : candle.t / 1000, 
-// 		open : candle.o, 
-// 		high : candle.h, 
-// 		low : candle.l, 
-// 		close : candle.c 
-// 	})
-// }
+	candleSeries2.update({
+		time : candle.t / 1000, 
+		open : candle.o, 
+		high : candle.h, 
+		low : candle.l, 
+		close : candle.c 
+	})
+}

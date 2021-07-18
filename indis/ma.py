@@ -41,15 +41,33 @@ def rma(df, lookback):
 
     return pd.DataFrame({'rma'+str(lookback) : out})
 
-
 def ma(df, l):
     close = df['close']
     ma = close.rolling(l).mean()
     print(ma.head(10))
 
+def wma(arr, l):
+    norm = 0.0
+    sum = 0.0
+    for i in range(l):
+        weight = (l-i)*l
+        norm += weight
+        sum += arr[i]*weight
+    return sum / norm
+
+def wmaDF(df, l, column='close'):
+    weights = np.arange(1,l+1)
+    wma10 = df[column].rolling(l).apply(lambda prices: np.dot(prices, weights)/weights.sum(), raw=True)
+    return pd.DataFrame({'wma10':wma10})
+
 if __name__ == "__main__":
     df = (pd.read_csv('../test/testData.csv')).drop('Unnamed: 0',axis=1)
 
-    out = rma(df,10)
-    print(out.head(100))
+    # out = rma(df,10)
+    # print(out.head(100))
+
+    a = np.array([90.90,90.36,90.28,90.83,90.91])
+
+    # df = pd.DataFrame({'close':a})
+    print(wmaDF(df,10))
 

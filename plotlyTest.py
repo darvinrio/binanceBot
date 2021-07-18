@@ -2,7 +2,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 from datetime import datetime
-import getData
+
 from indis.hccp import getHCCP
 
 # df = (pd.read_csv('test/testData.csv')).drop('Unnamed: 0',axis=1)
@@ -43,13 +43,14 @@ def plotSell(dates):
             line_color="red"
         )
 
-def showPlot() :
+def showPlot(file="output/plot.html") :
     try:
-        fig.write_html("output/plot.html")
+        fig.write_html(file)
     except:
         print('its okay')
 
 if __name__ == "__main__":
+    import getData
     candles = getData.getCandles()
     df = pd.DataFrame(candles)
     df = df.drop([7,8,9,10,11], axis=1)
