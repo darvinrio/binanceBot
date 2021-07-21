@@ -45,10 +45,6 @@ class liveTest:
         self.longOrder = True
         self.noOfOrders = 0
 
-        self.mongoClient = pymongo.MongoClient("mongodb+srv://darvinrio_heroku:QtSHC38AenjyDem0@binbottestsignals.s017x.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-        self.db = self.mongoClient['bin-bot-signal-test']
-        self.collection = self.db['liveTestJul17']
-
 
     async def on_message(self, message):
         json_msg = json.loads(message)
@@ -122,7 +118,6 @@ class liveTest:
             output['no of Orders'] = self.noOfOrders
             output['action'] = action
             print(output)
-            self.collection.insert_one(output)
         
         else :
             print('boop')

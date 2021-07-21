@@ -22,6 +22,7 @@ QQEF=ema(rsi(src,length),SSF)
 QUP=QQEF+ATRRSI*4.236
 QDN=QQEF-ATRRSI*4.236
 QQES=0.0
+// done till here
 QQES:=QUP<nz(QQES[1]) ? QUP : QQEF>nz(QQES[1]) and QQEF[1]<nz(QQES[1]) ? QDN :  QDN>nz(QQES[1]) ? QDN : QQEF<nz(QQES[1]) and QQEF[1]>nz(QQES[1]) ? QUP : nz(QQES[1])
 Colorh = QQEF-50>10 ? #007002 : QQEF-50<-10 ? color.red : #E8E81A
 
