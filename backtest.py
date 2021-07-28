@@ -88,7 +88,7 @@ class bt:
         self.npRow, self.npColumn = np.shape(self.dataNP)
 
 
-    def setPortfolio(self, start, lev=1):
+    def setPortfolio(self, start=10, lev=1):
         self.portfolio = start
         self.leverage = lev
 
@@ -107,7 +107,7 @@ class bt:
         self.mainData.dropna().reset_index(drop=True)
 
 
-    def defineOrder(self, entryCondition, exitCondition, longFlag = True): 
+    def defineOrder(self, entryCondition, exitCondition, stoploss=0.1, longFlag = True): 
         # condition = 'open < mcb and close > mcb'
         """
             orderType = 'long' or 'short'
@@ -126,9 +126,11 @@ class bt:
             if self.order["type"] is None and eval(entryCondition):
 
                 if longFlag:
-                    entryPrice = self.dataNP[2][column]
+                    # entryPrice = self.dataNP[2][column]
+                    entryPrice = self.dataNP[4][column]
                 else :
-                    entryPrice = self.dataNP[3][column]
+                    # entryPrice = self.dataNP[3][column]
+                    entryPrice = self.dataNP[4][column]
 
                 self.order['type'] = orderType
                 self.order['order']['coinAmt'] = (self.portfolio*self.leverage)/entryPrice
@@ -138,12 +140,55 @@ class bt:
 
                 self.long.iloc[column,0] = True
 
+                continue
+
+            if self.order["type"] is not(None) :
+
+                exitPrice = self.dataNP[4][column]
+                entryPrice = self.order['order']['enterPrice']
+                pnl = (entryPrice - exitPrice)*100 / entryPrice
+                pnlS = (exitPrice - entryPrice)*100 / entryPrice
+                
+                # print("Entry at "+ str(self.order['order']['enterPrice']))
+                # print(str(self.order['type'])+" "+str(pnl))
+
+                if (longFlag and pnl > stoploss) or (not(longFlag) and pnlS > (stoploss)):
+                    # print('enter '+str(self.order['type'])+' stop price with pnl '+ str(pnl))
+                    self.order['order']['exitPrice'] = exitPrice
+                    self.order['order']['exitTime'] = self.dataNP[0][column]
+
+                    coinsAmt = self.order['order']['coinAmt']
+                    entryPrice = self.order['order']['enterPrice']
+                    self.portfolio = orderFlag * ((coinsAmt * exitPrice) - (self.order['order']['usdtAmt'] * self.leverage)) + self.order['order']['usdtAmt']
+                    profit = self.portfolio - self.order['order']['usdtAmt']
+                    coinChange = exitPrice - self.order['order']['enterPrice']
+
+                    currentOrder = copy.deepcopy(self.order)
+                    currentOrder['profit'] = profit
+                    currentOrder['profitPercent'] = profit * 100 / self.order['order']['usdtAmt']
+                    currentOrder['coinChange'] = coinChange
+
+                    self.orderList.append(currentOrder)
+                    del(currentOrder)
+
+                    self.order['type'] = None
+                    self.order['order']['coinAmt'] = 0
+                    self.order['order']['usdtAmt'] = self.portfolio
+                    self.order['order']['enterPrice'] = 0
+                    self.order['order']['exitPrice'] = 0
+                    self.order['order']['entryTime'] = ""
+                    self.order['order']['exitTime'] = ""
+
+                    self.long.iloc[column,1] = True     
+
             if self.order["type"] is not(None) and eval(exitCondition):
 
                 if longFlag:
-                    exitPrice = self.dataNP[3][column]
+                    # exitPrice = self.dataNP[3][column]
+                    exitPrice = self.dataNP[4][column]
                 else :
-                    exitPrice = self.dataNP[2][column]
+                    # exitPrice = self.dataNP[2][column]
+                    exitPrice = self.dataNP[4][column]
 
                 self.order['order']['exitPrice'] = exitPrice
                 self.order['order']['exitTime'] = self.dataNP[0][column]
