@@ -55,4 +55,6 @@ if __name__ == "__main__":
     df = df.drop([7,8,9,10,11], axis=1)
     df.columns = ['openTime', 'open', 'high', 'low', 'close', 'volume', 'closeTime']
     print(df)
+    df.to_csv('test/testData.csv')
+
 

@@ -2,6 +2,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 from datetime import datetime
+from plotly.subplots import make_subplots
 
 from indis.hccp import getHCCP
 
@@ -9,6 +10,14 @@ from indis.hccp import getHCCP
 fig = go.Figure()
 fig.update_layout(hovermode="x")
 fig.update_yaxes(fixedrange=False)
+
+def initSubPlots(r, c):
+    """
+        r - rows
+        c - columns
+    """
+    global fig
+    fig = make_subplots(rows=r, cols=c, shared_xaxes=True)
 
 def plotCandles(df):
     fig.add_trace(go.Candlestick(
@@ -29,14 +38,14 @@ def plotLines(data):
                 y=data[column], name=column
             ))
 
-def plotBuy(dates):
+def plotBuy(dates,r=0, c=0):
     for date in dates:
         fig.add_vline(
             x = str(date),
             line_color="green"
         )
     
-def plotSell(dates):
+def plotSell(dates,r=0, c=0):
     for date in dates:
         fig.add_vline(
             x = str(date),

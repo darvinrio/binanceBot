@@ -77,11 +77,10 @@ def nQQE(df, rsi_l=14, ssf=5):
     # outData = outData.fillna(0)
     outData = outData.dropna().reset_index(drop=True)
 
+    
+
     outData.apply(calcVals, axis=1)
-    outData['QQES'] = outData['QQES'] - 50
-    outData['QQEF'] = outData['QQEF'] - 50
     # print(outData['ATRRSI'])
-    outData = outData.drop(range(0,30))
     return outData.drop(['QDN', 'QUP', 'TR', 'WWMA', 'ATRRSI'], axis=1)
 
 if __name__ == "__main__":
