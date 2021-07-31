@@ -12,7 +12,7 @@ simple trading bot with flask backend and html+js ui (currently no UI though)
 * Works fine during sideways market
 * Takes losses during massive bull and bear moves
 
-* Working on logNormal Distribution moments
+* Working on logNormal Distribution moments to help assess market conditions
 * plotted mean, logReturns and 1.96 SD bounds
 
 ![plot](/strategies/moments/newplot.png "Normal Dist Plot")
