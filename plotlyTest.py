@@ -19,16 +19,16 @@ def initSubPlots(r, c):
     global fig
     fig = make_subplots(rows=r, cols=c, shared_xaxes=True)
 
-def plotCandles(df):
+def plotCandles(df, r=1, c=1):
     fig.add_trace(go.Candlestick(
                 x=pd.to_datetime(df['openTime']/1000, unit='s'),
                 open=df['open'],
                 high=df['high'],
                 low=df['low'],
                 close=df['close']
-    ))
+    ), row=r, col =c)
 
-def plotLines(data):
+def plotLines(data, r=1, c=1):
     for column in data :
         if column == 'openTime':
             continue
@@ -36,16 +36,16 @@ def plotLines(data):
             fig.add_trace(go.Scatter(
                 x=pd.to_datetime(data['openTime']/1000, unit='s'), 
                 y=data[column], name=column
-            ))
+            ), row=r, col =c)
 
-def plotBuy(dates,r=0, c=0):
+def plotBuy(dates,r=1, c=1):
     for date in dates:
         fig.add_vline(
             x = str(date),
             line_color="green"
         )
     
-def plotSell(dates,r=0, c=0):
+def plotSell(dates,r=1, c=1):
     for date in dates:
         fig.add_vline(
             x = str(date),
@@ -54,7 +54,8 @@ def plotSell(dates,r=0, c=0):
 
 def showPlot(file="output/plot.html") :
     try:
-        fig.write_html(file)
+        # fig.write_html(file)
+        fig.show()
     except:
         print('its okay')
 
@@ -75,6 +76,8 @@ if __name__ == "__main__":
     hccpData = getHCCP(df)
 
     hccpData = hccpData.drop(['open', 'high', 'low', 'close', 'volume', 'closeTime'], axis=1)
+
+    initSubPlots(1,1)
 
     plotCandles(df)
     plotLines(hccpData)

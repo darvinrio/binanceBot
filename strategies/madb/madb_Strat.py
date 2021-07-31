@@ -7,8 +7,8 @@ if __name__ == "__main__":
     import getData
     candles = getData.getCandles(
         symbol="BTCUSDT", 
-        leng='1 day', 
-        time=1, 
+        leng='6 month', 
+        time=15, 
         klineType="FUTURES"
     )
 
@@ -25,8 +25,8 @@ if __name__ == "__main__":
     strat.setLineSeriesData(outData)
 
     strat.initNumPy()
-    strat.defineOrder('open > upper2 and close < upper2', "low < lower1", longFlag=False)
-    strat.defineOrder('open < lower2 and close > lower2', 'high > upper1')
+    strat.defineOrder('open > upper1 and close < upper1', "low < basis", longFlag=False)
+    strat.defineOrder('open < lower1 and close > lower1', 'high > basis')
 
     # strat.defineOrder('open < basis and close > basis', 'high > upper1')
     # strat.defineOrder('open > basis and close < basis', 'low < lower1', longFlag=False)
@@ -41,6 +41,6 @@ if __name__ == "__main__":
     print(strat.portfolio)
     df = strat.getOrderList()
     df.to_csv('strategies/madb/orders.csv')
-    # # print(strat.candleColumns)
+    # # # print(strat.candleColumns)
     # strat.showPlot(file='strategies/madb/plot.html')
     

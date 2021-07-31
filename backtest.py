@@ -107,7 +107,7 @@ class bt:
         self.mainData.dropna().reset_index(drop=True)
 
 
-    def defineOrder(self, entryCondition, exitCondition, stoploss=0.1, longFlag = True): 
+    def defineOrder(self, entryCondition, exitCondition, stoploss=100, longFlag = True): 
         # condition = 'open < mcb and close > mcb'
         """
             orderType = 'long' or 'short'
@@ -143,7 +143,7 @@ class bt:
                 continue
 
             if self.order["type"] is not(None) :
-
+                # print('no entry')
                 exitPrice = self.dataNP[4][column]
                 entryPrice = self.order['order']['enterPrice']
                 pnl = (entryPrice - exitPrice)*100 / entryPrice
