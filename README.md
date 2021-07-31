@@ -1,14 +1,19 @@
 # binanceBot
-simple trading bot with flask backend and html+js ui
+simple trading bot with flask backend and html+js ui (currently no UI though)
 
-* So far managed to download and plot the Binance BTCUSDT 1min data 
+## progress
+* download and plot the Binance BTCUSDT 1min data 
 * Calculate HCCP for the data and plot it too
 
-Current interactive output is available in output folder `plot.html`
+* API testing for Binance to get live websockets stream and use that data to livetest HCCP
+* Testing HCCP showed significant repaint that rendered live data useless
+
+* Now working on a indicator based on standard deviation of logreturns (madb)
+* Works fine during sideways market
+* Takes losses during massive bull and bear moves
+
+
+Current interactive output for **madb** is available in folder `strategies/madb/plot.html`
 
 Create a `private` folder and copy `keys.py` from `keysTemplate` folder and add your binance API keys
 Run the app using `flask` to run `app.py` or running `plotlyTest.py`
-
-Current output in compressed png 
-
-![hccp](https://github.com/darvinrio/binanceBot/blob/e07d782bdcee4ff7a59a08e593c9770c0725d1ce/output/hccpPlot.png)
