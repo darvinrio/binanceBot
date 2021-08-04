@@ -291,49 +291,49 @@ if __name__ == "__main__":
     df.columns = ['openTime', 'open', 'high', 'low', 'close', 'volume', 'closeTime']
 
 
-    from indis.redK import lazyLine
+    # from indis.redK import lazyLine
 
-    obj = bt(df, portfolio=10)
+    # obj = bt(df, portfolio=10)
 
-    redKline = lazyLine(obj.candles)
+    # redKline = lazyLine(obj.candles)
 
-    obj.setLineSeriesData(redKline)
-    obj.initNumPy()
+    # obj.setLineSeriesData(redKline)
+    # obj.initNumPy()
 
-    obj.defineOrder('close < wma10', 'close > wma10', longFlag=False)
+    # obj.defineOrder('close < wma10', 'close > wma10', longFlag=False)
 
-    obj.plotCandles()
-    obj.plotLineSeries()
-    obj.plotOrders()
-    obj.showPlot()
-    print(obj.portfolio)
+    # obj.plotCandles()
+    # obj.plotLineSeries()
+    # obj.plotOrders()
+    # obj.showPlot()
+    # print(obj.portfolio)
 
-    df = obj.getOrderList()
-    df.to_csv('orders.csv')
+    # df = obj.getOrderList()
+    # df.to_csv('orders.csv')
 
     # 
-        # from indis.hccp import getHCCP
+    from indis.panda_hccp import HCCP
 
-        # class strategy(bt):        
-        #     def __init__(self, candles, portfolio=0):
+    class strategy(bt):        
+        def __init__(self, candles, portfolio=0):
 
-        #         super().__init__(candles, portfolio)
-        #         self.hccp = getHCCP(self.candles)
+            super().__init__(candles, portfolio)
+            self.hccp = HCCP(self.candles)
 
-        #         self.setLineSeriesData(self.hccp.drop(['open', 'high', 'low', 'close', 'volume', 'closeTime'], axis=1))
+            self.setLineSeriesData(self.hccp)
 
-        #     def plotHccp(self):
-        #         self.plotLineSeries()
+        def plotHccp(self):
+            self.plotLineSeries()
 
-        # strat = strategy(df,10)
-        # strat.initNumPy()
-        # strat.defineOrder('low < ( mcb + 50 ) and close > ( mcb + 50 )', 'high > ( mct - 50 )')
-        # # strat.defineOrder('high > sct and open < sct' , 'low < scb', longFlag=False)
-        
-        # df = strat.getOrderList()
-        # print(strat.portfolio)
-        # df.to_csv('orders.csv')
-        # strat.plotCandles()
-        # strat.plotLineSeries()
-        # # strat.plotOrders()
-        # strat.showPlot()
+    strat = strategy(df,10)
+    strat.initNumPy()
+    strat.defineOrder('low < mcb and close > mcb', 'high > sct')
+    # strat.defineOrder('high > sct and open < sct' , 'low < scb', longFlag=False)
+    
+    df = strat.getOrderList()
+    print(strat.portfolio)
+    df.to_csv('orders.csv')
+    strat.plotCandles()
+    strat.plotLineSeries()
+    # strat.plotOrders()
+    strat.showPlot()
