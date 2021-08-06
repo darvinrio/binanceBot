@@ -31,10 +31,10 @@ def getHCCP(df, scl=10, mcl=30, scm=1.0, mcm=3.0): # hlc = [h, l, c]
     scl_2 = int(scl/2)
     mcl_2 = int(mcl/2)
 
-    ma_scl_2 = ma_scl#.shift(periods = scl_2)
+    ma_scl_2 = ma_scl.shift(periods = scl_2)
     ma_scl_2.columns = [list(ma_scl_2.columns.values)[0]+'shifted']
 
-    ma_mcl_2 = ma_mcl#.shift(periods = mcl_2)
+    ma_mcl_2 = ma_mcl.shift(periods = mcl_2)
     ma_mcl_2.columns = [list(ma_mcl_2.columns.values)[0]+'shifted']
     
     df2 = pd.concat([
@@ -42,26 +42,15 @@ def getHCCP(df, scl=10, mcl=30, scm=1.0, mcm=3.0): # hlc = [h, l, c]
     ], axis=1)
     
     cols = list(df2.columns.values)
-    # cols = [rma1, rma2, atr1, atr2]
-    df2[cols[0]] = df2[cols[0]].mask(pd.isnull, df['close'])
-    df2[cols[1]] = df2[cols[1]].mask(pd.isnull, df['close'])
 
-    df['sct'] = df2[cols[0]] + df2[cols[2]]
-    df['scb'] = df2[cols[0]] - df2[cols[2]]
-    df['mct'] = df2[cols[1]] + df2[cols[3]]
-    df['mcb'] = df2[cols[1]] - df2[cols[3]]
+    out = pd.DataFrame()
+    out['openTime'] = df['openTime']
+    out['sct'] = df2[cols[0]] + df2[cols[2]]
+    out['scb'] = df2[cols[0]] - df2[cols[2]]
+    out['mct'] = df2[cols[1]] + df2[cols[3]]
+    out['mcb'] = df2[cols[1]] - df2[cols[3]]
     
-    # df['s_sct'] = df2[cols[5]] + df2[cols[2]]
-    # df['s_scb'] = df2[cols[5]] - df2[cols[2]]
-    # df['s_mct'] = df2[cols[4]] + df2[cols[3]]
-    # df['s_mcb'] = df2[cols[4]] - df2[cols[3]]
-
-    # df['sct']=df['sct'].mask(pd.isnull, df['close'])
-    # df['scb']=df['scb'].mask(pd.isnull, df['close'])
-    # df['mct']=df['mct'].mask(pd.isnull, df['close'])
-    # df['mcb']=df['mcb'].mask(pd.isnull, df['close'])
-
-    return df
+    return out
 
 if __name__ == "__main__":
 
@@ -72,6 +61,6 @@ if __name__ == "__main__":
     # for row in out.iterrows():
     #     print(row)
 
-    out = out.dropna().reset_index(drop=True)
+    # out = out.dropna().reset_index(drop=True)
     # out = out
     print(out)

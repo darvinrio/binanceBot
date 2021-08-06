@@ -46,7 +46,7 @@ class plotlyPlotter:
                 self.fig.add_trace(go.Scatter(
                     x=self.parseTimeStamp(lineSeries['openTime']), 
                     y=lineSeries[line], name=line,
-                    marker_color = colorSeries
+                    # marker_color = colorSeries
                 ), row=row, col =column)
 
 

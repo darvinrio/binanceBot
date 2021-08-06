@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np 
 
 def rma(ser):
-    ser = ser.ewm(alpha=1/Alpha).mean().reset_index(drop=True)
+    ser = ser.ewm(alpha=1/Alpha,adjust=False).mean().reset_index(drop=True)
     val = ser[Alpha-1]
     return val
 
@@ -13,7 +13,7 @@ def true_range(row):
         abs(row['open'] - row['low'])
     )
 
-def HCCP(df, scl=10, mcl=30, scm=1.0, mcm=3.0):
+def HCCP(df, scl=10, mcl=30, scm=2.0, mcm=3.0):
 
     global Alpha
     scl = int(scl/2)
@@ -27,9 +27,9 @@ def HCCP(df, scl=10, mcl=30, scm=1.0, mcm=3.0):
     tr = df.apply(true_range, axis=1)
 
     Alpha = scl
-    scm_off = tr.rolling(scl).apply(rma)
+    scm_off = scm * (tr.rolling(scl).apply(rma))
     Alpha = mcl
-    mcm_off = tr.rolling(mcl).apply(rma)
+    mcm_off = mcm * (tr.rolling(mcl).apply(rma))
 
     scl_2=int(scl/2)
     mcl_2=int(mcl/2)

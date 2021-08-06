@@ -8,18 +8,23 @@ mcl_t =  input(30, title="Medium Cycle Length?")
 scm =  input(1.0, title="Short Cycle Multiplier?")
 mcm =  input(3.0, title="Medium Cycle Multiplier?")
 src=input(close, title="Source")
+
 scl = scl_t/2, mcl = mcl_t/2
+
 ma_scl=rma(src,scl)
 ma_mcl=rma(src,mcl)
+
 ////////////////////////////
 scm_off = scm*atr(scl)
 mcm_off = mcm*atr(mcl)
 scl_2=scl/2, mcl_2=mcl/2
+
 //////////////////////////
 sct =  nz(ma_scl[scl_2], src)+ scm_off
 scb =  nz(ma_scl[scl_2], src)- scm_off
 mct =  nz(ma_mcl[mcl_2], src)+ mcm_off
 mcb =  nz(ma_mcl[mcl_2], src)- mcm_off
+
 scc=#E8E8E8, mcc=#E8E8E8 
 sccm=gray, mccm=black
 sccf=red, mccf=green

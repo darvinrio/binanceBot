@@ -107,7 +107,7 @@ class bt:
         self.mainData.dropna().reset_index(drop=True)
 
 
-    def defineOrder(self, entryCondition, exitCondition, stoploss=100, longFlag = True): 
+    def defineOrder(self, entryCondition, exitCondition, stoploss=1, longFlag = True): 
         # condition = 'open < mcb and close > mcb'
         """
             orderType = 'long' or 'short'
@@ -232,7 +232,8 @@ class bt:
         return pd.json_normalize(self.orderList)
 
 
-    def plotCandles(self):             
+    def plotCandles(self): 
+        plt.initSubPlots(1, 1)            
         plt.plotCandles(self.candles)
 
 
@@ -290,28 +291,6 @@ if __name__ == "__main__":
     df = df.drop([7,8,9,10,11], axis=1)
     df.columns = ['openTime', 'open', 'high', 'low', 'close', 'volume', 'closeTime']
 
-
-    # from indis.redK import lazyLine
-
-    # obj = bt(df, portfolio=10)
-
-    # redKline = lazyLine(obj.candles)
-
-    # obj.setLineSeriesData(redKline)
-    # obj.initNumPy()
-
-    # obj.defineOrder('close < wma10', 'close > wma10', longFlag=False)
-
-    # obj.plotCandles()
-    # obj.plotLineSeries()
-    # obj.plotOrders()
-    # obj.showPlot()
-    # print(obj.portfolio)
-
-    # df = obj.getOrderList()
-    # df.to_csv('orders.csv')
-
-    # 
     from indis.panda_hccp import HCCP
 
     class strategy(bt):        
@@ -327,13 +306,13 @@ if __name__ == "__main__":
 
     strat = strategy(df,10)
     strat.initNumPy()
-    strat.defineOrder('low < mcb and close > mcb', 'high > sct')
-    # strat.defineOrder('high > sct and open < sct' , 'low < scb', longFlag=False)
+    strat.defineOrder('open < mcb and close > mcb', 'high > mct')
+    strat.defineOrder('close > sct and open < sct' , 'low < mcb', longFlag=False)
     
     df = strat.getOrderList()
     print(strat.portfolio)
     df.to_csv('orders.csv')
     strat.plotCandles()
     strat.plotLineSeries()
-    # strat.plotOrders()
+    strat.plotOrders()
     strat.showPlot()
